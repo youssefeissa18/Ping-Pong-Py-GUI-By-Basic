@@ -1,77 +1,118 @@
-# call library turtle for Gui
 import turtle
 
-# Features of Game Screen and intialize screen
+# Initialize the screen
 win = turtle.Screen()
-win.title("Ping Pong Game By Youssef") # Title for Window
-win.bgcolor("black") # Color for Screen
-win.setup(width= 800, height= 600) # width and height for Window
-win.tracer(0) # to Stop Update for screen
+win.title("Ping Pong Game By Youssef")
+win.bgcolor("black")
+win.setup(width=800, height=600)
+win.tracer(0)
 
+# Paddle (madrab) 1
+madrab1 = turtle.Turtle()
+madrab1.speed(0)
+madrab1.shape("square")
+madrab1.color("blue")
+madrab1.shapesize(stretch_wid=6, stretch_len=1)
+madrab1.penup()
+madrab1.goto(-350, 0)
 
-#madrab1
-madrab1 = turtle.Turtle() # initalize Tutrle object
-madrab1.speed(0) # speed for madrab to move
-madrab1.shape("square")#shape for madrab
-madrab1.color("blue")#color for madrab
-madrab1.penup()# To remove the Point is move there
-madrab1.goto(-350,0)# start postion
-madrab1.shapesize(6,1,1.5) # size of madrab
+# Paddle (madrab) 2
+madrab2 = turtle.Turtle()
+madrab2.speed(0)
+madrab2.shape("square")
+madrab2.color("red")
+madrab2.shapesize(stretch_wid=6, stretch_len=1)
+madrab2.penup()
+madrab2.goto(350, 0)
 
-#madrab2
-madrab2 = turtle.Turtle() # initalize Tutrle object
-madrab2.speed(0) # speed for madrab to move
-madrab2.shape("square") #shape for madrab
-madrab2.color("red") #color for madrab
-madrab2.penup() # To remove the Point is move there
-madrab2.goto(350,0) # start postion
-madrab2.shapesize(6,1,1.5) # size of madrab
+# Ball
+ball = turtle.Turtle()
+ball.speed(0)
+ball.shape("circle")
+ball.color("white")
+ball.penup()
+ball.goto(0, 0)
+ball.dx = 0.25
+ball.dy = 0.25
 
-#ball
-ball = turtle.Turtle() # initalize Tutrle object
-ball.speed(0) # speed for madrab to move
-ball.shape("circle") #shape for madrab
-ball.color("white") #color for madrab
-ball.penup() # To remove the Point is move there
-ball.goto(0,0) # start postion
-ball.dx = 2.5
-ball.dy = 2.5
+#Score
+score1 = 0
+score2 = 0
+score = turtle.Turtle()
+score.speed()
+score.color("white")
+score.penup()
+score.hideturtle()
+score.goto(0,260)
+score.write("Player1 :0 ""Player2 :0 ", align="center",font=("Courier",24,"normal"))
 
-
-# Move Up For Two madrab
+# Function to move paddle 1 up
 def madrab1_up():
     y = madrab1.ycor()
     y += 20
     madrab1.sety(y)
 
-def madrab2_up():
-    y = madrab2.ycor()
-    y += 20
-    madrab2.sety(y)
-
-# Move Down For Two madrab
+# Function to move paddle 1 down
 def madrab1_down():
     y = madrab1.ycor()
     y -= 20
     madrab1.sety(y)
 
+# Function to move paddle 2 up
+def madrab2_up():
+    y = madrab2.ycor()
+    y += 20
+    madrab2.sety(y)
+
+# Function to move paddle 2 down
 def madrab2_down():
     y = madrab2.ycor()
     y -= 20
     madrab2.sety(y)
 
-
-# keyboard button will use
+# Keyboard bindings
 win.listen()
-win.onkeypress(madrab1_up(), "w") # make the move up using W
-win.onkeypress(madrab1_down(), "s") # make the move up using S
+win.onkeypress(madrab1_up, "w")
+win.onkeypress(madrab1_down, "s")
+win.onkeypress(madrab2_up, "Up")
+win.onkeypress(madrab2_down, "Down")
 
-win.onkeypress(madrab2_up(), "Up") # make the move up using up button
-win.onkeypress(madrab2_down(), "Down") # make the move up using down button
-
-# main game loop
+# Main game loop
 while True:
-    win.update()    # to make Screen update
-    # move the Ball
+    win.update()
+
+    # Move the ball
     ball.setx(ball.xcor() + ball.dx)
     ball.sety(ball.ycor() + ball.dy)
+
+    # Border check
+    if ball.ycor() > 290:
+        ball.sety(290)
+        ball.dy *= -1
+    if ball.ycor() < -290:
+        ball.sety(-290)
+        ball.dy *= -1
+    if ball.xcor() > 390:
+        ball.goto(0, 0)
+        ball.dx *= -1
+        score1 +=1
+        score.clear()
+        score.write(f"Player1 :{score1} "f"Player2 :{score2} ", align="center", font=("Courier", 24, "normal"))
+
+    if ball.xcor() < -390:
+        ball.goto(0, 0)
+        ball.dx *= -1
+        score2 += 1
+        score.clear()
+        score.write(f"Player1 :{score1} "f"Player2 :{score2} ", align="center", font=("Courier", 24, "normal"))
+
+    # Paddle and ball collisions
+    if (ball.dx > 0) and (350 > ball.xcor() > 340) and (madrab2.ycor() + 50 > ball.ycor() > madrab2.ycor() - 50):
+        ball.color("red")
+        ball.setx(340)
+        ball.dx *= -1
+
+    elif (ball.dx < 0) and (-350 < ball.xcor() < -340) and (madrab1.ycor() + 50 > ball.ycor() > madrab1.ycor() - 50):
+        ball.color("blue")
+        ball.setx(-340)
+        ball.dx *= -1
